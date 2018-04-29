@@ -37,7 +37,6 @@ app.post('/upload_ballast', function(req, res) {
     if(  sampleFile.name.indexOf('.png') != -1
       || sampleFile.name.indexOf('.jpg') != -1
       || sampleFile.name.indexOf('.bmp') != -1){
-        console.log("Valid format");
         parseImage(sampleFile.data, res);
         return;
     }
@@ -55,7 +54,6 @@ app.post('/upload_secret', function(req, res) {
     
     let sampleFile = req.files.file;
     secret_buffer = sampleFile.data;
-    console.log(secret_buffer);
     res.send("Secret Uploaded");
     return;
     
@@ -63,7 +61,7 @@ app.post('/upload_secret', function(req, res) {
 
 
 app.get('/encode', function(req, res){
-    encode(secret_buffer, image_obj); 
+    encode(secret_buffer, image_obj, res); 
 });
 
 app.post('/decode', function(req, res){
@@ -71,35 +69,31 @@ app.post('/decode', function(req, res){
     return res.status(400).send('No files were uploaded.');
     
     let sampleFile = req.files.file;
-    //console.log(sampleFile);
-    //console.log(sampleFile.name);
  	// Verify extension
-    if(  sampleFile.name.indexOf('.png') != -1){
-        console.log("Decoding image : Valid format");
-        
+    if(  sampleFile.name.indexOf('.png') != -1){        
         Jimp.read(sampleFile.data, function(err, image){
             if (err) throw err;
-            decode(image);
+            decode(image, res);
         });
-        
         return;
     }
     else if(sampleFile.name.indexOf('.wav') != -1){
         
     }
     else{
+        console.log("Unsupported file type")
         res.send("Unsupported file type");
     }
 });
 
 app.get('/download_encoded', function(req, res){
   var file = __dirname + '/encoded_secret.png';
-  res.download(file); // Set disposition and send it.
+  res.download(file); 
 });
 
 app.get('/download_decoded', function(req, res){
   var file = __dirname + '/output_binary';
-  res.download(file); // Set disposition and send it.
+  res.download(file); 
 });
 
 
@@ -116,10 +110,11 @@ function parseImage(image_buffer, res){
     });
 }
 
-function encode(secret_buffer, image){
+function encode(secret_buffer, image, res){
 
     if(!secret_buffer || !image){
         console.log("Buffer / Image missing, Encoding Failed");
+        res.send("Buffer / Image missing, Encoding Failed");
         return;
     }
     let width = image.bitmap.width;
@@ -127,13 +122,14 @@ function encode(secret_buffer, image){
 
     if ( width * height < secret_buffer.length + 4){
         console.log("Image too small");
+        res.send("Image too small")
         return;
     }
 
     let current_index = 0;
     let counter = 0;
 
-    console.log("Encoded length : ", secret_buffer.length, "Bin", secret_buffer.length.toString(2));
+    //console.log("Encoded length : ", secret_buffer.length, "Bin", secret_buffer.length.toString(2));
     for (let i = 0; i < width; i++){
         for (let j = 0; j < height; j++){
 
@@ -186,10 +182,6 @@ function encode(secret_buffer, image){
 
                     let augmented_color = stubbed_color ^ to_encode;
 
-                    if(current_index < 5){
-                        console.log("Secret byte : ", secret_byte.toString(2));
-                        console.log("Augmented color : ", augmented_color.toString(2));   
-                    }
                     image.setPixelColor(augmented_color, i, j);
 
                     current_index++;
@@ -200,11 +192,15 @@ function encode(secret_buffer, image){
 
         }
     }
-    image.write("encoded_secret.png")
+    res.send("Encoding complete");
+    console.log("Encoding complete");
+//    image.quality(60);
+//    image.deflateLevel(9);
+    image.write("encoded_secret.png");
 }
 
 
-function decode(image){
+function decode(image, res){
 
     let width = image.bitmap.width;
     let height = image.bitmap.height;
@@ -249,6 +245,7 @@ function decode(image){
                     console.log("Decoded Length", secret_length);
                     if(secret_length < 0 || (secret_length > (width * height) - 4) ) {
                         console.log("Error parsing the encoded file");
+                        res.send("Error parsing the encoded file");
                         return;
                     }
                     
@@ -274,7 +271,8 @@ function decode(image){
     }
 
     fs.writeFile('output_binary', buf, "binary", function(){
-        console.log("SUCCESS!");
+        console.log("Decoding : SUCCESS!");
+        res.send("Decoding : SUCCESS")
     });
 
 }

@@ -33,6 +33,7 @@ function uploadBallast(){
                     //console.log(xhr.response);
                     allowed_size = parseInt(xhr.response);
                     updatePrompt("allowed-size", xhr.response + " bytes");
+                    document.getElementById("step2").classList.toggle('collapsed');
                 }
                 xhr.send(formData);
 
@@ -67,6 +68,9 @@ function uploadSecret(){
         
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/upload_secret");
+        xhr.onload = function(){
+            document.getElementById("step3").classList.toggle('collapsed');
+        }
         xhr.send(formData);
 
         file = input.files[0];
@@ -97,11 +101,10 @@ function uploadEncoded(){
         
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/decode");
-        xhr.send(formData);
-
-//        file = input.files[0];
-//        updatePrompt("secret-size", "File " + file.name + " is " + file.size + " bytes in size");
-//        
+        xhr.onload = function(){
+            document.getElementById("decode_download_link").classList.toggle('hidden');
+        }
+        xhr.send(formData);   
     }
 }
 
@@ -109,6 +112,9 @@ function encode(){
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "http://localhost:8080/encode");
+    xhr.onload = function(){
+        document.getElementById("encode_download_link").classList.toggle('hidden');
+    }
     xhr.send();
     
 }
