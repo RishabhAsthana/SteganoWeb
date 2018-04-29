@@ -2,27 +2,34 @@
 <html>
 <head>
 	<title>Stegano Web</title>
-    <link href="/stylesheet.css" rel=stylesheet type="text/css">
+    <link href="public/stylesheet.css" rel=stylesheet type="text/css">
 </head>
 <body>
     <script src="ClientSide.js"></script>
     <h1>SteganoWeb</h1>
+    
     <h2>Input Ballast</h2>
-
-    <form ref='uploadForm' 
-          id='uploadForm' 
-          method='post' 
-          action='http://localhost:8080/upload' 
-          encType="multipart/form-data"
-          target="hidden_frame"
-          >
-	   <input name="file" id="ballast-fileinput" type="file">
+    <input name="file" id="ballast-fileinput" type="file">
     <input type='submit' id='btnLoad' value='Load' onclick='uploadBallast();'>
-    </form>
     
     <h3>Supported file types : wav, png, jpg, ,bmp</h3>
     <h3>Ballast Size : <span id="ballast-size"></span></h3>
-    <h3>Maximum allowed secret size : </h3>
-    <iframe name="hidden_frame" style="width:0; height:0; border:0; border:none"></iframe>
+    <h3>Maximum allowed secret size : <span id="allowed-size"></span></h3>
+   
+    <h2>Input Secret</h2>
+    <input name="file" id="secret-fileinput" type="file">
+    <input type='submit' onclick='uploadSecret();'>
+    <h3>Secret Size : <span id="secret-size"></span></h3>
+    
+    <h2>Encode Secret</h2>    
+    <input type='submit' value="Encode" onclick='encode();'>
+
+    <a href="http://localhost:8080/download_encoded"> DOWNLOAD</a>
+
+    <h2>Decode Secret</h2>
+    <input name="file" id="decode-fileinput" type="file">
+    <input type='submit' value="Decode" onclick='uploadEncoded();'>
+    <a href="http://localhost:8080/download_decoded"> DOWNLOAD</a>
+
 </body>
 </html>
