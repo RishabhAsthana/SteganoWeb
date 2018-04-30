@@ -72,17 +72,23 @@ function uploadSecret(){
     }
     else {
         
-        var formData = new FormData();
-        formData.append("file", input.files[0]);
-        
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://" + host + "/upload_secret");
-        xhr.onload = function(){
-            document.getElementById("step3").classList.toggle('collapsed');
-        }
-        xhr.send(formData);
-
         file = input.files[0];
+        
+        if(file.size < allowed_size){
+        
+            var formData = new FormData();
+            formData.append("file", input.files[0]);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://" + host + "/upload_secret");
+            xhr.onload = function(){
+                document.getElementById("step3").classList.toggle('collapsed');
+            }
+            xhr.send(formData);
+        }
+        else{
+            updatePrompt("secret-size", "Secret file is too big to be encoded in given ballast");       
+            return;
+        }
         updatePrompt("secret-size", "File " + file.name + " is " + file.size + " bytes in size");
         
     }

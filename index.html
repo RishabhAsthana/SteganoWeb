@@ -30,7 +30,8 @@
             <h3> Note: File extensions are not encoded as of yet, please remember the secret's extension</h3>
         </div>
         <div id="step3" class="section collapsed">
-            <h2>Encode Secret</h2>    
+            <h2>Encode Secret</h2>
+            <h3>When successful, a download link would appear</h3>
             <input type='submit' value="Encode" onclick='encode();'>
             <a href="http://localhost:8080/download_encoded" class="hidden" id="encode_download_link"> DOWNLOAD </a>
         </div>
@@ -40,6 +41,7 @@
         <div id="step4">
             <h1 id="title">Decode</h1>
             <h2>Decode Secret</h2>
+            <h3>When successful, a download link would appear</h3>
             <input name="file" id="decode-fileinput" type="file">
             <input type='submit' value="Decode" onclick='uploadEncoded();'>
             <a href="http://localhost:8080/download_decoded" class="hidden" id="decode_download_link"> DOWNLOAD </a>
