@@ -7,6 +7,19 @@ A demo can be found at this address : http://165.227.49.237:8080/
 
 NOTE: This demo will be taken down at a later point and is being only served as a proof of concept for grading purposes.
 
+## Motivation
+Images (PNG, JPG, BMP) and Audio (WAV) files are dense information formats which use significant precision to store their information. The precision is high enough such that even if the lower bits change, the apparent or audible change in the media would be indistiguishable from the orginal for the user. Using this idea, we can encode any secret file into a supported ballast file where the noise introduced by us would by 0.39% in case of WAV files and 0.78% change in case of images, which is hard for most humans to notice. We also encode some meta information during our encoding process such that we don't require the original file to decode our message, allowing for successful one time copies of our data.
+
+## Drawbacks
+This method, however subtle can still be detected by Fourier Transform of the media which can reveal our secret information piggy-backing on the main media information. Also, the method used is not robust, and any change to the binary (say compression by social media platforms) will destroy our message. An area of improvement would to increase the robustness of this technique, and better encapsulation such that its harder to detect.
+
+## Usage
+The left column provides Encoding interface while the right column provides Decoding interface.
+  ### Encoding
+  The user first uploads a file called the Ballast which would serve as the medium in which we encode the secret. If the file type is accepted, another form would reveal itself where the user would be allowed to upload the secret file. This can be any file as long as its size is below the allowed size displayed to the user when the upload the ballast. Finally the third form would unravel where when the user commences the encoding process, on successful completion, a download link would appear for the user.
+  ### Decoding
+  Decoding form allows user to upload either an encoded wav or png file, and if successful provides a link to download the decoded secret binary file.
+  
 ## Installation
 ```
 npm install
