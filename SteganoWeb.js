@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var axios = require('axios');
 
@@ -5,7 +6,7 @@ var app = express();
 const fileUpload = require('express-fileupload');
 
 var path = require('path');
-let port = 8080;
+var port = 8080;
 express.static('./static')
 
 app.use(fileUpload());
@@ -19,6 +20,7 @@ var Jimp = require("jimp");
 var image_obj;
 var secret_buffer;
 var allowed_size = 0;
+var wav_file = 0;
 
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
@@ -38,12 +40,21 @@ app.post('/upload_ballast', function(req, res) {
       || sampleFile.name.indexOf('.jpg') != -1
       || sampleFile.name.indexOf('.bmp') != -1){
         parseImage(sampleFile.data, res);
+        wav_file = 0;
         return;
     }
     else if(sampleFile.name.indexOf('.wav') != -1){
-        
-    }
+	
+        sampleFile.mv('ballast.wav', function(err) {
+        if (err)
+           return res.status(500).send(err);
+ 	console.log("Wav file uploaded");
+        res.send('Wav file uploaded!');
+      });
+      wav_file = 1;  
+    }	
     else{
+        wav_file = 0;
         res.send("Unsupported file type");
     }
 });
@@ -54,6 +65,15 @@ app.post('/upload_secret', function(req, res) {
     
     let sampleFile = req.files.file;
     secret_buffer = sampleFile.data;
+    
+    if(wav_file == 1){
+
+        sampleFile.mv('secret', function(err) {
+            if (err)
+               return res.status(500).send(err);
+ 	    console.log("Secret Saved");
+        });  
+    }
     res.send("Secret Uploaded");
     return;
     
@@ -61,7 +81,17 @@ app.post('/upload_secret', function(req, res) {
 
 
 app.get('/encode', function(req, res){
-    encode(secret_buffer, image_obj, res); 
+    if(wav_file == 0)
+        encode(secret_buffer, image_obj, res); 
+    else{
+        let spawn = require("child_process").spawn;
+        let process = spawn('./wavcodec',['encode', 'ballast.wav', 'secret', 'encoded_secret.wav']);//, arg1, arg2, ...]); 
+        process.stdout.setEncoding('utf8');
+        process.stdout.on('data', function (data){
+        res.send("Wav filed decoded");
+	console.log(data);
+        }); 
+    }
 });
 
 app.post('/decode', function(req, res){
@@ -78,7 +108,21 @@ app.post('/decode', function(req, res){
         return;
     }
     else if(sampleFile.name.indexOf('.wav') != -1){
-        
+
+        sampleFile.mv('input.wav', function(err) {
+            if (err)
+               return res.status(500).send(err);
+ 	    console.log("Encoded Secret Saved");
+            let spawn = require("child_process").spawn;
+            let process = spawn('./wavcodec',['decode', 'input.wav', 'output_binary']);//, arg1, arg2, ...]); 
+            process.stdout.setEncoding('utf8');
+            process.stdout.on('data', function (data){
+            res.send("Wav filed decoded");
+	    console.log(data);
+        });
+        });  
+
+       
     }
     else{
         console.log("Unsupported file type")
@@ -88,6 +132,9 @@ app.post('/decode', function(req, res){
 
 app.get('/download_encoded', function(req, res){
   var file = __dirname + '/encoded_secret.png';
+  if (wav_file == 1){
+      file = __dirname + '/encoded_secret.wav';
+  }
   res.download(file); 
 });
 
@@ -276,3 +323,5 @@ function decode(image, res){
     });
 
 }
+
+

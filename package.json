@@ -5,7 +5,7 @@
   "main": "SteganoWeb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node SteganoWeb.js"
+    "start": "nodejs SteganoWeb.js"
   },
   "author": "Rishabh Asthana {asthana4@illinois.edu}",
   "license": "ISC",

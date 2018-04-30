@@ -1,5 +1,8 @@
 var allowed_size = 0;
 
+// Replace the following with your hosting address if not running locally
+var host = 'localhost:8080';
+
 function uploadBallast(){
     
     let input, file;
@@ -28,7 +31,7 @@ function uploadBallast(){
               || file_name.indexOf('.bmp') != -1){
 
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8080/upload_ballast");
+                xhr.open("POST", "http://" + host + "/upload_ballast");
                 xhr.onload = function(){
                     //console.log(xhr.response);
                     allowed_size = parseInt(xhr.response);
@@ -67,7 +70,7 @@ function uploadSecret(){
         formData.append("file", input.files[0]);
         
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/upload_secret");
+        xhr.open("POST", "http://" + host + "/upload_secret");
         xhr.onload = function(){
             document.getElementById("step3").classList.toggle('collapsed');
         }
@@ -100,7 +103,7 @@ function uploadEncoded(){
         formData.append("file", input.files[0]);
         
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/decode");
+        xhr.open("POST", "http://" + host + "/decode");
         xhr.onload = function(){
             document.getElementById("decode_download_link").classList.toggle('hidden');
         }
@@ -111,7 +114,7 @@ function uploadEncoded(){
 function encode(){
 
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://localhost:8080/encode");
+    xhr.open("GET", "http://" + host + "/encode");
     xhr.onload = function(){
         document.getElementById("encode_download_link").classList.toggle('hidden');
     }
