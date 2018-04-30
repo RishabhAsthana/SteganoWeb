@@ -34,8 +34,14 @@ function uploadBallast(){
                 xhr.open("POST", "http://" + host + "/upload_ballast");
                 xhr.onload = function(){
                     //console.log(xhr.response);
-                    allowed_size = parseInt(xhr.response);
-                    updatePrompt("allowed-size", xhr.response + " bytes");
+                    if (xhr.response != 'Wav file uploaded!'){
+                        allowed_size = parseInt(xhr.response);
+                        updatePrompt("allowed-size", xhr.response + " bytes");   
+                    }
+                    else{
+                        allowed_size = file.size/2 - 2600;
+                        updatePrompt("allowed-size", allowed_size + " bytes");                           
+                    }
                     document.getElementById("step2").classList.toggle('collapsed');
                 }
                 xhr.send(formData);
